@@ -88,6 +88,7 @@ jobs:
         ls -la | grep kubeconfig
         mv ./kubeconfig.json ~/.kube/config
         cat ~/.kube/config
+        kubectl config use-context external
         sed -i 's/_IMAGE_TAG_/${{ env.IMAGE_TAG }}/g' ./tomcat/tomcat-deployment.yml
         kubectl apply -f tomcat/tomcat-deployment.yml
         kubectl apply -f tomcat/tomcat-service.yml
