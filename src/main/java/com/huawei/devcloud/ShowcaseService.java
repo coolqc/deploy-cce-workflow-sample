@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 import org.codehaus.jettison.json.JSONArray;
 
 /**
- * Root resource (exposed at "intro" path)
+ * Root resource (exposed at "intro" path s)
  */
 @Path("showcase")
 public class ShowcaseService {
