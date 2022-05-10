@@ -80,13 +80,13 @@ jobs:
         bucket_name: hdn-github-action
         operation_type: download
         obs_file_path: k8s/kubeconfig.json
-        local_file_path: ~/.kube
+        local_file_path: ./
    
     # 部署tomcat 到k8s集群
     - name: deploy tomcat to CCE k8s from SWR
       run: |
-        ls -la ~/.kube
-        mv ~/.kube/kubeconfig.json ~/.kube/config
+        ls -la | grep kubeconfig
+        mv ./kubeconfig.json ~/.kube/config
         cat ~/.kube/config
         sed -i 's/_IMAGE_TAG_/${{ env.IMAGE_TAG }}/g' ./tomcat/tomcat-deployment.yml
         kubectl apply -f tomcat/tomcat-deployment.yml
