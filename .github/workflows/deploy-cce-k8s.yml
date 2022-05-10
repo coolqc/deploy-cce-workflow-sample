@@ -13,7 +13,7 @@ on:
 #        description: 'docker build image tag'  
 env: 
   IMAGE_TAG: maven-samp-${{ github.sha }}
-  REGIONID: ${region_id}
+  REGIONID: cn-north-4
 # IMAGE_TAG: ${{ github.event.inputs.image_tag }} //如果希望手工控制镜像tag,也需要放开这行，同时屏蔽上面那行IMAGE_TAG
 jobs:
   build:
@@ -31,19 +31,6 @@ jobs:
     - name: build maven project
       run: mvn clean -U package -Dmaven.test.skip 
 
-    # 上传当前版本到OBS中归档，需要提前准备OBS的AK/SK,并在github项目添加ACCESSKEY和SECRETACCESSKEY两个secrets
-    - name: Upload To Huawei OBS
-      uses: huaweicloud/obs-helper@v1.0.0
-      id: upload_file_to_obs
-      with:
-        access_key: ${{ secrets.ACCESSKEY }}
-        secret_key: ${{ secrets.SECRETACCESSKEY }}
-        region: ${{ env.REGIONID }}
-        bucket_name: bucket-test
-        operation_type: upload
-        local_file_path: target/intro.war
-        obs_file_path: workflow/intro/v1.0.0.1/
-
     # 检查docker版本
     - name: check docker version
       run: docker -v
@@ -52,9 +39,9 @@ jobs:
     - name: Log in to HuaweiCloud SWR
       uses: huaweicloud/swr-login@v1
       with:
-      region: ${{ env.REGIONID }}
-      access-key-id: ${{ secrets.ACCESSKEY }}
-      access-key-secret: ${{ secrets.SECRETACCESSKEY }}
+        region: ${{ env.REGIONID }}
+        access-key-id: ${{ secrets.ACCESSKEY }}
+        access-key-secret: ${{ secrets.SECRETACCESSKEY }}
 
     # 设置 docker 环境
     - name: Set up Docker Buildx
@@ -69,7 +56,7 @@ jobs:
         context: ./
         file: ./Dockerfile
         push: true
-        tags: swr.${{ env.REGIONID }}.myhuaweicloud.com/ptworkflow/tomcat:${{ IMAGE_TAG }}
+        tags: swr.${{ env.REGIONID }}.myhuaweicloud.com/qcworkflow/qc-image:${{ IMAGE_TAG }}
 
     - name: install kubectl
       run: |
@@ -81,21 +68,7 @@ jobs:
         ls -la ~/k8s
         export PATH=~/k8s:$PATH
         mkdir ~/.kube
-
-    # 需要提前准备好kubectconfig，并存放到可以方便下载到的地方，不建议放到代码仓库里，容易泄露，这里我们放在了obs里
-    - name: Upload To Huawei OBS
-      uses: huaweicloud/obs-helper@v1.0.0
-      id: upload_file_to_obs
-      with:
-        access_key: ${{ secrets.ACCESSKEY }}
-        secret_key: ${{ secrets.SECRETACCESSKEY }}
-        region: ${{ env.REGIONID }}
-        bucket_name: bucket-test
-        operation_type: download
-        obs_file_path: k8s/kubeconfig.json
-        local_file_path: ~/.kube/config
-
-      
+   
     # 部署tomcat 到k8s集群
     - name: deploy tomcat to CCE k8s from SWR
       run: |
