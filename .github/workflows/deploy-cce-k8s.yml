@@ -68,7 +68,6 @@ jobs:
         ls -la ~/k8s
         export PATH=~/k8s:$PATH
         mkdir ~/.kube
-        ls -la ~/
         
     # 需要提前准备好kubectconfig，并存放到可以方便下载到的地方，不建议放到代码仓库里，容易泄露，这里我们放在了obs里
     - name: Download kubeconfig from Huawei OBS
@@ -86,7 +85,7 @@ jobs:
     # 部署tomcat 到k8s集群
     - name: deploy tomcat to CCE k8s from SWR
       run: |
-        ls -la ~/
+        ls -la ~/.kube
         cat ~/.kube/config/kubeconfig.json
         sed -i 's/_IMAGE_TAG_/${{ env.IMAGE_TAG }}/g' ./tomcat/tomcat-deployment.yml
         kubectl apply -f tomcat/tomcat-deployment.yml
