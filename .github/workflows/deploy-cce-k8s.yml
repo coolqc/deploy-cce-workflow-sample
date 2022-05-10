@@ -69,7 +69,7 @@ jobs:
         export PATH=~/k8s:$PATH
         mkdir ~/.kube
         
-    # 需要提前准备好kubectconfig，并存放到可以方便下载到的地方，不建议放到代码仓库里，容易泄露，这里我们放在了obs里
+    # 需要提前准备好kubectconfig，并存放到可以方便下载到的地方，不建议放到代码仓库里，容易泄露，这里我们放在了obs里11
     - name: Download kubeconfig from Huawei OBS
       uses: huaweicloud/obs-helper@v1.0.0
       id: upload_file_to_obs
